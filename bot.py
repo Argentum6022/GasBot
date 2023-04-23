@@ -1,11 +1,5 @@
-from aiogram import Bot, types
-from aiogram.dispatcher import Dispatcher
-from aiogram.utils import executor
-from aiogram.dispatcher.filters import BoundFilter
-from magic_filter import F
 
-
-
+from aiogram import Bot, Dispatcher, executor, types
 from config import TOKEN
 
 
@@ -29,30 +23,61 @@ async def process_help_command(message: types.Message):
 
 @dp.message_handler(commands=["search"])
 async def cmd_start(message: types.Message):
-    markup =types.InlineKeyboardMarkup()
-    markup.add(types.InlineKeyboardButton('По названию',callback_data='name'))
-    markup.add(types.InlineKeyboardButton('По каталогу',callback_data='cat'))
-    await message.answer("Как будем производить поиск?", reply_markup=markup)
+    kb = [
+        [types.KeyboardButton(text="По названию")],
+        [types.KeyboardButton(text="По каталогу")]
+    ]
+    keyboard = types.ReplyKeyboardMarkup(keyboard=kb)
+    await message.answer("Как будем производить поиск?", reply_markup=keyboard)
 
-@dp.callback_query_handler()
-async def callback1(call1):
-    await call1.message.answer(call1.data)
-    fg={'шельф':1,"бурение":2,"бизнес":3,"газ":4,"Добыча":5}
-    if call1.data=='cat':
-        markup = types.InlineKeyboardMarkup()
-        for i in fg.keys():
-            markup.add(types.InlineKeyboardButton(i,callback_data=fg[i]))
-        await call1.message.answer("Выберете функциональную группу",reply_markup=markup)
 
-@dp.callback_query_handler()
-async def callback2(call2):
-    await call2.message.answer(call2.data)
-    domen={'AR':1,"VR":2,"ИИ":3,"3D":4,"БВС":5}
-    markup = types.InlineKeyboardMarkup()
-    for j in domen.keys():
-        markup.add(types.InlineKeyboardButton(j,callback_data=domen[j]))
-    await call2.message.answer("Отлично! Теперь опредилимся с доменом",reply_markup=markup)
+@dp.message_handler(lambda message: message.text == "По названию")
+async def without_puree(message: types.Message):
+    await message.answer("Введите название искомого сценария.")
 
+
+@dp.message_handler(lambda message: message.text == "По каталогу")
+async def without_puree(message: types.Message):
+    fg=['шельф',"Бурение","Бизнес","Добыча","Разработка"]
+    kb = []
+    for i in fg:
+        kb.append([types.KeyboardButton(text=i)])
+    keyboard = types.ReplyKeyboardMarkup(keyboard=kb)
+    await message.answer("Тогда выберем функциональную группу!", reply_markup=keyboard)
+
+@dp.message_handler(lambda message: message.text in ['шельф',"Бурение","Бизнес","Добыча","Разработка"])
+async def without_puree(message: types.Message):
+    domen=['VR',"AR","ИИ","3D","BDA"]
+    kb = []
+    for j in domen:
+        kb.append([types.KeyboardButton(text=j)])
+    keyboard = types.ReplyKeyboardMarkup(keyboard=kb)
+    await message.answer("Теперь определимся с доменом!", reply_markup=keyboard)
+
+@dp.message_handler(lambda message: message.text in ['VR',"AR","ИИ","3D","BDA"])
+async def without_puree(message: types.Message):
+    tecno=['VR',"Мобильные решения","Предективный анализ","Продвинутый анализ","Видеоаналитика"]
+    kb = []
+    for k in tecno:
+        kb.append([types.KeyboardButton(text=k)])
+    keyboard = types.ReplyKeyboardMarkup(keyboard=kb)
+    await message.answer("Какую технологию вы бы хотели применить!", reply_markup=keyboard)
+
+@dp.message_handler(lambda message: message.text in ['VR',"Мобильные решения","Предективный анализ","Продвинутый анализ","Видеоаналитика"])
+async def without_puree(message: types.Message):
+    method=['Обучение персонала',"Цифровой двойник","Мониторинг информации","3D печать","Отбор производственных данных"]
+    kb = []
+    for f in method:
+        kb.append([types.KeyboardButton(text=f)])
+    keyboard = types.ReplyKeyboardMarkup(keyboard=kb)
+    await message.answer("Осталось выбрать метод!", reply_markup=keyboard)
+
+@dp.message_handler(lambda message: message.text in ['Обучение персонала',"Цифровой двойник","Мониторинг информации","3D печать","Отбор производственных данных"])
+async def without_puree(message: types.Message):
+    await message.answer("Вот что нам удалось найти!"
+                         "\n1)Иди нахуй"
+                         "\n2)И че ты мне сделаешь"
+                         "\n3)Иди нахуй")
 if __name__ == '__main__':
 
     executor.start_polling(dp)
