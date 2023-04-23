@@ -1,10 +1,11 @@
 
 from aiogram import Bot, Dispatcher, executor, types
 from config import TOKEN
-
+from Database import Data
 
 bot = Bot(token=TOKEN)
 dp = Dispatcher(bot)
+
 parametr={'fg':0,'domen':0,'tech':0,'method':0}
 
 @dp.message_handler(commands=['start'])
@@ -24,6 +25,8 @@ async def process_help_command(message: types.Message):
 
 @dp.message_handler(commands=["search"])
 async def cmd_start(message: types.Message):
+    global parametr
+    parametr = {'fg': 0, 'domen': 0, 'tech': 0, 'method': 0}
     kb = [
         [types.KeyboardButton(text="По названию")],
         [types.KeyboardButton(text="По каталогу")]
@@ -39,50 +42,57 @@ async def without_puree(message: types.Message):
 
 @dp.message_handler(lambda message: message.text == "По каталогу")
 async def without_puree(message: types.Message):
-    fg=['шельф',"Бурение","Бизнес","Добыча","Разработка"]
+    fg=Data.get_func_group()
     kb = []
     for i in fg:
         kb.append([types.KeyboardButton(text=i)])
     keyboard = types.ReplyKeyboardMarkup(keyboard=kb)
     await message.answer("Тогда выберем функциональную группу!", reply_markup=keyboard)
 
-@dp.message_handler(lambda message: message.text in ['шельф',"Бурение","Бизнес","Добыча","Разработка"])
+@dp.message_handler(lambda message: message.text in Data.get_func_group())
 async def without_puree(message: types.Message):
     parametr['fg']=message.text
-    domen=['VR',"AR","ИИ","3D","BDA"]
+    domen=Data.get_domen(message.text)
     kb = []
     for j in domen:
         kb.append([types.KeyboardButton(text=j)])
     keyboard = types.ReplyKeyboardMarkup(keyboard=kb)
     await message.answer("Теперь определимся с доменом!", reply_markup=keyboard)
 
-@dp.message_handler(lambda message: message.text in ['VR',"AR","ИИ","3D","BDA"])
+@dp.message_handler(lambda message: message.text in Data.get_domen(parametr['fg']))
 async def without_puree(message: types.Message):
     parametr['domen']=message.text
-    tech=['VR',"Мобильные решения","Предективный анализ","Продвинутый анализ","Видеоаналитика"]
+    tech=Data.get_technology(parametr['domen'],parametr['fg'])
     kb = []
     for k in tech:
         kb.append([types.KeyboardButton(text=k)])
     keyboard = types.ReplyKeyboardMarkup(keyboard=kb)
     await message.answer("Какую технологию вы бы хотели применить!", reply_markup=keyboard)
 
-@dp.message_handler(lambda message: message.text in ['VR',"Мобильные решения","Предективный анализ","Продвинутый анализ","Видеоаналитика"])
+@dp.message_handler(lambda message: message.text in Data.get_technology(parametr['domen'],parametr['fg']))
 async def without_puree(message: types.Message):
     parametr['tech']=message.text
-    method=['Обучение персонала',"Цифровой двойник","Мониторинг информации","3D печать","Отбор производственных данных"]
+    method=Data.get_method(parametr['domen'],parametr['fg'],parametr['tech'])
     kb = []
     for f in method:
         kb.append([types.KeyboardButton(text=f)])
     keyboard = types.ReplyKeyboardMarkup(keyboard=kb)
     await message.answer("Осталось выбрать метод!", reply_markup=keyboard)
 
-@dp.message_handler(lambda message: message.text in ['Обучение персонала',"Цифровой двойник","Мониторинг информации","3D печать","Отбор производственных данных"])
+@dp.message_handler(lambda message: message.text in Data.get_method(parametr['domen'],parametr['fg'],parametr['tech']))
 async def without_puree(message: types.Message):
     parametr['method']=message.text
-    await message.answer("Вот что нам удалось найти!"
-                         "\n1)Иди нахуй"
-                         "\n2)И че ты мне сделаешь"
-                         "\n3)Иди нахуй")
+    res = Data.get_documents(parametr['fg'],parametr['domen'],parametr['tech'],parametr['method'])
+    await message.answer('Результаты поиска:')
+    for i in res:
+        await message.answer(
+                             f"\nНаименование сценария: {i['Наименование сценария']}"
+                             f"\nОписание: {i['Описание']}"
+                             f"\nПотенциал решения: {i['Потенциал решения']}"
+                             f"\nРыночная зрелость: {i['Рыночная зрелость']}"
+                             f"\nОрганизационная готовность: {i['Организационная готовность']}"
+                             f"\nРеализуется в Газпром нефти?: {i['Реализуется в Газпром нефти?']}"
+    )
     print(parametr)
 if __name__ == '__main__':
 
