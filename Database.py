@@ -76,6 +76,7 @@ class DataBase:
         res=[]
         maxx = 0.0
         object=0
+        objects = []
         count=0
         data = self.collection.find({},{'_id':0})
         for i in data:
@@ -84,11 +85,12 @@ class DataBase:
             count+=1
             if jarowinkler_similarity(s1,i['Описание']) > maxx:
                 maxx = jarowinkler_similarity(s1,i['Описание'])
-                object = i
-        return maxx,object
+                objects.append(i)
+        return objects[-1:-5:-1]
 
 
 
 
 Data = DataBase()
+
 

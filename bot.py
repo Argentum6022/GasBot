@@ -83,6 +83,7 @@ async def without_puree(message: types.Message):
 async def without_puree(message: types.Message):
     parametr['method']=message.text
     res = Data.get_documents(parametr['fg'],parametr['domen'],parametr['tech'],parametr['method'])
+    print(len(res))
     await message.answer('Результаты поиска:')
     for i in res:
         await message.answer(
