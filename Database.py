@@ -1,6 +1,4 @@
 from pymongo import MongoClient
-from jarowinkler import *
-
 class DataBase:
     def __init__(self):
         self.client = MongoClient('mongodb://localhost:27017/')
@@ -51,44 +49,8 @@ class DataBase:
         return set(res_new)
 
 
-    def get_documents_by_fg(self,func):
-            print("Get all users")
-            data = self.collection.find({"Функциональная группа":func},{'_id':0})
-
-            res = [i for i in data]
-            return res
-
-    def get_documents_by_fg_and_domen(self,func,domen):
-        print("Get all users")
-        data = self.collection.find({"Функциональная группа": func,'Домен':domen}, {'_id': 0})
-
-        res = [i for i in data]
-        return res
-
-    def get_documents_by_fg_and_domen_and_tech(self,func,domen,tech):
-        print("Get all users")
-        data = self.collection.find({"Функциональная группа": func, 'Домен': domen,'Технология':tech}, {'_id': 0})
-
-        res = [i for i in data]
-        return res
-
-    def get_correlation(self,s1):
-        res=[]
-        maxx = 0.0
-        object=5
-        objects = []
-        count=0
-        data = self.collection.find({},{'_id':0})
-        for i in data:
-            res.append(i)
-        for i in res:
-            count+=1
-            if jarowinkler_similarity(s1,i['Описание']) > maxx:
-                maxx = jarowinkler_similarity(s1,i['Описание'])
-                objects.append(i)
-        return objects[-1:-5:-1]
-
-
 
 
 Data = DataBase()
+
+Data.db.updateMany({'Домен' : "Искусственный интеллект и цифровые двойники "}, {'$set': {'Домен' : 'Искусственный интеллект и цифровые двойники'}})
