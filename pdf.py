@@ -1,31 +1,24 @@
-from ptext.pdf.document import Document
-from ptext.pdf.page.page import Page
-from ptext.pdf.pdf import PDF
-from ptext.pdf.canvas.layout.paragraph import Paragraph
-from ptext.pdf.canvas.layout.page_layout import SingleColumnLayout
-from ptext.io.read.types import Decimal
+from pathlib import Path
 
+from borb.pdf import Document
+from borb.pdf import Page
+from borb.pdf import SingleColumnLayout
+from borb.pdf import Paragraph
+from borb.pdf import PDF
 
-# Create an empty Document
-document = Document()
+# create an empty Document
+pdf = Document()
 
-# Create an empty page
+# add an empty Page
 page = Page()
+pdf.add_page(page)
 
-# Add the Page to the Document
-document.append_page(page)
-
-# Write the Document to a file
-with open("output.pdf", "wb") as pdf_file_handle:
-    PDF.dumps(pdf_file_handle, document)
-
-# Setting a layout manager on the Page
+# use a PageLayout (SingleColumnLayout in this case)
 layout = SingleColumnLayout(page)
 
-# Adding a Paragraph to the Page
-layout.add(Paragraph("Hello World", font_size=Decimal(20), font="Helvetica"))
+# add a Paragraph object
+layout.add(Paragraph("Hello World!"))
 
-document.append_page(page)
-
-with open("output.pdf", "wb") as pdf_file_handle:
-    PDF.dumps(pdf_file_handle, document)
+# store the PDF
+with open(Path("output.pdf"), "wb") as pdf_file_handle:
+    PDF.dumps(pdf_file_handle, pdf)
