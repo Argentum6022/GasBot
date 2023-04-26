@@ -61,6 +61,7 @@ async def without_puree1(message: types.Message):
 
 
 
+
 @dp.message_handler(lambda message: message.text == "По каталогу" )
 async def without_puree2(message: types.Message):
     fg=Data.get_func_group()
