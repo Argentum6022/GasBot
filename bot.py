@@ -40,17 +40,23 @@ async def cmd_start(message: types.Message):
 #Начало поиска по названию
 @dp.message_handler(lambda message: message.text == "По названию")
 async def without_puree(message: types.Message):
-    await message.answer("Введите название искомого сценария.")
+    await message.answer("Введите название искомого сценария в такой форме: \"Поиск: название сценария\".")
 
 
 
-@dp.message_handler(lambda message: message.text not in [Data.get_func_group(),Data.get_domen(parametr['fg']),Data.get_technology(parametr['domen'],parametr['fg']),"Остановить поиск сейчас","По названию","Введите название искомого сценария.","По каталогу",Data.get_method(parametr['domen'],parametr['fg'],parametr['tech'])])
+@dp.message_handler(lambda message: message.text.split()[0]=="Поиск:" )
 async def without_puree1(message: types.Message):
-        print(message.text)
+        message.text.split().pop(0)
         res=Data.get_correlation(message.text)
         await message.answer('Вот, что удалось найти:')
-        for j in res:
-            await message.answer(j)
+        for i in res:
+            await message.answer(
+                f"\nНаименование сценария: {i['Наименование сценария']}"
+                f"\nОписание: {i['Описание']}"
+                f"\nПотенциал решения: {i['Потенциал решения']}"
+                f"\nРыночная зрелость: {i['Рыночная зрелость']}"
+                f"\nОрганизационная готовность: {i['Организационная готовность']}"
+                f"\nРеализуется в Газпром нефти?: {i['Реализуется в Газпром нефти?']}")
 
 
 
